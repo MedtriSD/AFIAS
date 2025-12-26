@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AFIAS｜展場互動式產品介紹</title>
+
+    <style>
+      :root{
+        /* ===== Light Brand Mode ===== */
+        --bg0:#f3f7ff;
+        --bg1:#eaf2ff;
+        --ink:#0f1c2e;
+        --paper:#ffffff;
+        --muted:#5b6b86;
+
+        --brand:#ffc627;
+        --brand2:#ffb300;
+
+        --accent:#1e63d6;
+        --accent2:#134bb0;
+
+        --navDark: rgba(18,35,49,.92);
+
+        --line:rgba(15,28,46,.12);
+        --shadow:0 20px 60px rgba(15,28,46,.12);
+        --shadow2:0 12px 30px rgba(15,28,46,.10);
+        --glow:0 0 18px rgba(255,198,39,.22);
+
+        --r12:12px;
+        --r16:16px;
+        --r22:22px;
+
+        --max:1120px;
+      }
+
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans TC", "PingFang TC", sans-serif;
+        color:var(--ink);
+        background:
+          radial-gradient(1200px 680px at 15% -10%, rgba(30,99,214,.12), rgba(243,247,255,0) 55%),
+          radial-gradient(1000px 620px at 95% 10%, rgba(255,198,39,.16), rgba(243,247,255,0) 55%),
+          linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 60%, #f3f7ff 100%);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+
+      .skip{
+        position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+      }
+      .skip:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 12px; background:#fff; border-radius:10px; z-index:9999; color:#1a2b3d}
+
+      .container{width:min(var(--max), calc(100% - 40px)); margin:0 auto;}
+
+      /* ===== Topbar (深色維持) ===== */
+      .topbar{
+        position:sticky; top:0; z-index:50;
+        background: var(--navDark);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,.12);
+      }
+      .topbar__inner{
+        display:flex; align-items:center; justify-content:space-between;
+        padding:10px 0;
+        gap:16px;
+        flex-wrap: wrap;
+      }
+
+      .brand{display:flex; align-items:center; gap:12px; color:#fff}
+      .brand__mark{
+        width:40px; height:40px; border-radius:14px;
+        display:grid; place-items:center;
+        background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%);
+        color:#1a2b3d; font-weight:1000; letter-spacing:.5px;
+        box-shadow: var(--glow);
+      }
+      .brand__title{font-weight:1000; letter-spacing:.6px; font-size:16px; color:#fff}
+      .brand__tag{opacity:.78; font-size:12px; color:rgba(255,255,255,.75)}
+
+      .nav{display:flex; align-items:center; gap:10px}
+      .nav__toggle{
+        display:none;
+        border:1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.08);
+        color:#fff;
+        padding:10px 12px;
+        border-radius: 12px;
+        cursor:pointer;
+        min-height:44px;
+      }
+      .nav__menu{display:flex; gap:10px}
+      .nav__item{
+        border:1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.08);
+        color:#fff;
+        padding:10px 12px;
+        border-radius: 999px;
+        cursor:pointer;
+        font-weight:850;
+        letter-spacing:.2px;
+        min-height:44px;
+        transition: all .2s ease;
+      }
+      .nav__item:hover{background: rgba(255,255,255,.14); border-color: rgba(255,198,39,.4)}
+      .nav__item.is-active{
+        background: linear-gradient(135deg, rgba(255,198,39,.96), rgba(255,179,0,.96));
+        color:#1a2b3d;
+        border-color: transparent;
+        box-shadow: var(--glow);
+      }
+
+      /* ===== Partner logos (Topbar) - 不用膠囊 ===== */
+      .partner{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-left:auto;
+      }
+      .logo-pill{
+        display:flex;align-items:center;justify-content:center;
+        padding:0;border-radius:0;background:transparent;border:0;box-shadow:none;
+      }
+      .logo-pill img{
+        height:26px;width:auto;display:block;
+        filter:drop-shadow(0 6px 14px rgba(0,0,0,.18));
+      }
+      @media (max-width: 720px){
+        .partner{
+          width:100%;
+          justify-content:center;
+          margin-left:0;
+          padding-bottom:6px;
+        }
+      }
+
+      /* ===== Hero ===== */
+      .hero{
+        position:relative;
+        overflow:hidden;
+        border-bottom: 1px solid var(--line);
+      }
+
+      /* ✅ Hero 背景：改成「漸層＋底紋」，不再用 A4 主視覺圖 */
+      .hero__bg{
+        position:absolute; inset:0; z-index:0;
+        background:
+          /* 主漸層：左亮→右暗，接近你提供的 Boditech 截圖質感 */
+          linear-gradient(90deg,
+            rgba(35, 96, 116, .92) 0%,
+            rgba(35, 70, 92,  .92) 42%,
+            rgba(28, 45, 60,  .92) 100%
+          ),
+          /* 上方柔光 */
+          radial-gradient(900px 520px at 18% 22%,
+            rgba(255,255,255,.10),
+            rgba(255,255,255,0) 60%
+          ),
+          /* 右上加深 */
+          radial-gradient(700px 420px at 88% 18%,
+            rgba(0,0,0,.22),
+            rgba(0,0,0,0) 62%
+          );
+      }
+      .hero__bg::before{
+        content:"";
+        position:absolute; inset:-2px;
+        pointer-events:none;
+        opacity:.22;
+        /* 底紋：微斜線 + 微網格（不搶戲） */
+        background:
+          repeating-linear-gradient(135deg,
+            rgba(255,255,255,.10) 0px,
+            rgba(255,255,255,.10) 1px,
+            rgba(255,255,255,0) 1px,
+            rgba(255,255,255,0) 14px
+          ),
+          repeating-linear-gradient(0deg,
+            rgba(255,255,255,.06) 0px,
+            rgba(255,255,255,.06) 1px,
+            rgba(255,255,255,0) 1px,
+            rgba(255,255,255,0) 22px
+          );
+        mix-blend-mode: overlay;
+      }
+      .hero__bg::after{
+  content:"";
+  position:absolute; inset:-40px;
+  pointer-events:none;
+  opacity:.24;
+  /* 六邊形底紋（線框）— 以 SVG pattern 產生，接近廣告稿的美編感 */
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27220%27%20height%3D%27190%27%20viewBox%3D%270%200%20220%20190%27%3E%0A%20%20%3Cg%20fill%3D%27none%27%20stroke%3D%27%23f5c33b%27%20stroke-opacity%3D%270.75%27%20stroke-width%3D%273%27%3E%0A%20%20%20%20%3Cpolygon%20points%3D%27110%2C8%20200%2C55%20200%2C135%20110%2C182%2020%2C135%2020%2C55%27/%3E%0A%20%20%3C/g%3E%0A%3C/svg%3E");
+  background-size: 220px 190px;
+  background-repeat: repeat;
+  transform: rotate(-6deg);
+  mix-blend-mode: overlay;
+  /* 讓底紋更集中在右側，不蓋住左側文字 */
+  -webkit-mask-image: radial-gradient(900px 520px at 78% 34%, rgba(0,0,0,1) 0%, rgba(0,0,0,.85) 45%, rgba(0,0,0,0) 72%);
+  mask-image: radial-gradient(900px 520px at 78% 34%, rgba(0,0,0,1) 0%, rgba(0,0,0,.85) 45%, rgba(0,0,0,0) 72%);
+}
+
+      .hero__content{
+        position:relative; z-index:1;
+        padding: 34px 0 26px;
+        display:grid;
+        grid-template-columns: 1.05fr .95fr;
+        gap: 24px;
+        align-items:stretch;
+      }
+
+      .hero__eyebrow{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-bottom:10px;
+      }
+      .hero__eyebrow .brandlogo{
+        height:28px;
+        width:auto;
+        display:block;
+        filter: drop-shadow(0 6px 14px rgba(0,0,0,.35));
+      }
+
+      .hero__title{
+        margin:10px 0 8px;
+        color:#fff;
+        font-weight:1000;
+        letter-spacing:.5px;
+        font-size: clamp(34px, 4.2vw, 56px);
+        line-height:1.05;
+        text-shadow: 0 10px 24px rgba(0,0,0,.25);
+        word-break: break-word;
+      }
+      .hero__desc{
+        margin:0;
+        color:rgba(255,255,255,.88);
+        font-size: 16px;
+        line-height:1.7;
+        max-width: 52ch;
+      }
+
+      .hero__cta{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap}
+
+      .btn{
+        border:1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.10);
+        color:#fff;
+        padding:12px 14px;
+        border-radius: 14px;
+        cursor:pointer;
+        font-weight:900;
+        letter-spacing:.2px;
+        transition: transform .10s ease, background .15s ease, border-color .15s ease;
+        min-height:44px;
+      }
+      .btn:active{transform: translateY(1px)}
+      .btn--primary{
+        background: linear-gradient(135deg, rgba(255,198,39,.98), rgba(255,179,0,.98));
+        color:#1a2b3d;
+        border-color: transparent;
+        box-shadow: var(--glow);
+      }
+      .btn--primary:hover{
+        background: linear-gradient(135deg, rgba(255,208,59,.98), rgba(255,189,20,.98));
+      }
+      .btn--ghost:hover{background: rgba(255,255,255,.16); border-color: rgba(255,198,39,.4)}
+      .btn--small{padding:10px 12px; border-radius: 12px; font-size:13px}
+
+      /* ✅ 產品特色三塊：超連結按鈕改成一致的藍色系 */
+      .btn--link{
+        background: rgba(30,99,214,.10);
+        border: 1px solid rgba(30,99,214,.22);
+        color: #1e63d6;
+      }
+      .btn--link:hover{
+        background: rgba(30,99,214,.14);
+        border-color: rgba(30,99,214,.32);
+      }
+
+      .hero__badges{
+        display:grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .badge{
+        background: rgba(255,255,255,.10);
+        border:1px solid rgba(255,255,255,.16);
+        border-radius: var(--r16);
+        padding: 12px;
+        box-shadow: var(--shadow2);
+        backdrop-filter: blur(8px);
+      }
+      .badge__kicker{color:rgba(255,255,255,.85); font-size:12px; font-weight:1000; letter-spacing:.3px}
+      .badge__text{color:#fff; font-weight:1000; margin-top:6px; font-size:14px}
+
+      /* Right side visuals */
+      .hero__right{
+        position:relative;
+        border-radius: var(--r22);
+        border:1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.10);
+        box-shadow: var(--shadow), inset 0 1px 0 rgba(255,198,39,.08);
+        padding: 16px;
+        overflow:hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .hexgrid{
+        position:absolute; inset:-30px -30px auto auto;
+        width:340px; height:260px;
+        opacity:.18;
+        pointer-events:none;
+      }
+      .hex{
+        position:absolute;
+        width:120px; height:104px;
+        clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+        border: 2px solid rgba(255,255,255,.18);
+        background: linear-gradient(135deg, rgba(255,198,39,.10), rgba(255,255,255,.06));
+      }
+      .hex--a{right:20px; top:10px}
+      .hex--b{right:90px; top:78px}
+      .hex--c{right:10px; top:126px}
+      .hex--d{right:160px; top:18px}
+      .hex--e{right:160px; top:146px}
+
+      .models{
+        position:relative;
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .modelcard{
+        text-align:left;
+        padding: 14px;
+        border-radius: var(--r16);
+        border:1px solid rgba(255,255,255,.16);
+        background: rgba(0,0,0,.14);
+        color:#fff;
+        cursor:pointer;
+        min-height:44px;
+        transition: all .2s ease;
+      }
+      .modelcard:hover{
+        background: rgba(0,0,0,.22);
+        border-color: rgba(255,198,39,.5);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow2);
+      }
+      .modelcard__name{font-weight:1000; letter-spacing:.4px; color:#fff}
+      .modelcard__dim{opacity:.82; margin-top:6px; font-weight:800; font-size:12px}
+      .modelcard__hint{margin-top:10px; font-size:12px; color: rgba(255,255,255,.82); font-weight:1000}
+      .modelcard__img{
+        width:100%;
+        height:110px;
+        object-fit:contain;
+        border-radius: 12px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.14);
+        margin-bottom: 10px;
+      }
+
+      /* Alert */
+      .alert{
+        margin: 14px 0 0;
+        display:flex; align-items:center; gap:12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255,198,39,.15);
+        border: 1px solid rgba(255,198,39,.35);
+        color:var(--ink);
+      }
+      .alert.is-hidden{display:none}
+      .alert__icon{
+        width:28px; height:28px; border-radius:10px;
+        display:grid; place-items:center;
+        background: var(--brand);
+        color:#1a2b3d;
+        font-weight:1000;
+      }
+      .alert__text{font-weight:900}
+      .alert__close{
+        margin-left:auto;
+        border:0;
+        background: transparent;
+        color:var(--ink);
+        font-size:16px;
+        cursor:pointer;
+        opacity:.75;
+      }
+      .alert__close:hover{opacity:1}
+
+      /* Tabs / Sections */
+      .tabs{padding: 22px 0 44px}
+      .tab{display:none}
+      .tab.is-active{display:block}
+
+      .sectionhead{margin: 14px 0 14px}
+      .sectionhead__title{
+        margin:0;
+        color:var(--ink);
+        font-weight:1000;
+        letter-spacing:.4px;
+        font-size: 24px;
+        word-break: break-word;
+      }
+      .sectionhead__desc{
+        margin:10px 0 0;
+        color: rgba(15,28,46,.72);
+        line-height:1.7;
+        max-width: 74ch;
+        font-weight:750;
+      }
+
+      /* Feature / Card surfaces */
+      .featuregrid{
+        display:grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .feature, .card, .contactcard, .toolbar, .tablewrap, .flowwrap{
+        border-radius: var(--r22);
+        background: rgba(255,255,255,.86);
+        border:1px solid var(--line);
+        box-shadow: var(--shadow2);
+        padding: 16px;
+        position:relative;
+        overflow:hidden;
+      }
+
+      .contactcard__logo{
+        margin-top:10px;
+        display:flex;
+        align-items:center;
+      }
+      .contactcard__logo img{
+        height:26px;
+        width:auto;
+        opacity:.95;
+      }
+
+
+      .feature:before{
+        content:"";
+        position:absolute; inset:-60px -60px auto auto;
+        width:200px; height:170px;
+        clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0% 50%);
+        background: linear-gradient(135deg, rgba(255,198,39,.12), rgba(30,99,214,.08));
+        transform: rotate(8deg);
+      }
+      .feature__icon{font-size:26px; position:relative}
+      .feature__title{margin:10px 0 10px; font-weight:1000; color:#23455c}
+      .feature__list{margin:0; padding-left: 18px; color:rgba(15,28,46,.82); line-height:1.7; font-weight:750}
+      .feature__btn{margin-top:12px}
+
+      .contactcard{
+        margin-top: 16px;
+        display:flex;
+        justify-content:space-between;
+        gap: 16px;
+        align-items:center;
+      }
+      .contactcard__title{margin:0; color:var(--ink); font-weight:1000}
+      .contactcard__desc{margin:8px 0 0; color:rgba(15,28,46,.70); line-height:1.6; font-weight:750}
+
+      .pill{
+        border:1px solid rgba(35,69,92,.22);
+        background: rgba(35,69,92,.06);
+        color:#23455c;
+        padding: 10px 12px;
+        border-radius: 999px;
+        cursor:pointer;
+        font-weight:900;
+        margin: 6px 6px 0 0;
+        min-height:44px;
+        transition: all .2s ease;
+      }
+      .pill:hover{background: rgba(35,69,92,.10); border-color: rgba(35,69,92,.35)}
+
+      /* Toolbar */
+      .toolbar__row{display:flex; gap:12px; align-items:end; flex-wrap:wrap}
+      .field{display:flex; flex-direction:column; gap:6px}
+      .field__label{color:rgba(15,28,46,.70); font-weight:1000; font-size:12px}
+      .field__input{
+        width: 280px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border:1px solid rgba(15,28,46,.16);
+        background: rgba(255,255,255,.95);
+        color:var(--ink);
+        outline:none;
+        font-weight:900;
+      }
+      .field__input:focus{border-color: rgba(35,69,92,.45); box-shadow: 0 0 0 3px rgba(35,69,92,.10)}
+      .field__input::placeholder{color:rgba(15,28,46,.42)}
+      .check{display:flex; align-items:center; gap:8px; color:rgba(15,28,46,.72); font-weight:900}
+      .toolbar__meta{margin-top:10px; color:rgba(15,28,46,.70); font-weight:900}
+
+      /* Table */
+      .tablewrap{
+        margin-top: 12px;
+        overflow:hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .table{width:100%; border-collapse:collapse; min-width:720px;}
+      .table thead th{
+        text-align:left;
+        padding: 12px;
+        background:#23455c;
+        color:#ffffff;
+        font-weight:1000;
+        letter-spacing:.2px;
+        font-size:13px;
+      }
+      .table tbody td{
+        padding: 12px;
+        border-top: 1px solid rgba(15,28,46,.06);
+        vertical-align:top;
+        font-weight:800;
+        color:rgba(15,28,46,.92);
+        background: rgba(255,255,255,.92);
+      }
+
+      .chip{
+        display:inline-flex; align-items:center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size:12px;
+        font-weight:1000;
+        background: rgba(30,99,214,.08);
+        color:#23455c;
+        border:1px solid rgba(30,99,214,.18);
+        margin-left:8px;
+      }
+
+      .footnotes{
+        margin-top: 10px;
+        color: rgba(15,28,46,.62);
+        line-height:1.6;
+        font-weight:850;
+        font-size:12px;
+      }
+
+      /* Cards */
+      .cards{
+        display:grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .card__title{margin:0; font-weight:1000; color:#23455c}
+      .card__desc{margin:10px 0 12px; color:rgba(15,28,46,.82); line-height:1.7; font-weight:750}
+
+      /* Callout (AFIAS TDM 解決方案) */
+      .callout{
+        margin-top: 14px;
+        border-radius: var(--r22);
+        border:1px solid rgba(35,69,92,.22);
+        background: rgba(255,255,255,.86);
+        padding: 14px;
+        display:flex;
+        gap:12px;
+        align-items:flex-start;
+        color:var(--ink);
+      }
+      .callout__badge{
+        flex:0 0 auto;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight:1000;
+        color:#1a2b3d;
+        background: linear-gradient(135deg, rgba(255,198,39,.98), rgba(255,179,0,.98));
+        box-shadow: var(--glow);
+      }
+      .callout__text{font-weight:850; line-height:1.7; opacity:.95}
+
+      /* Modal */
+      .modal{position:fixed; inset:0; z-index:100; display:grid; place-items:center}
+      .modal.is-hidden{display:none}
+      .modal__backdrop{position:absolute; inset:0; background: rgba(0,0,0,.50)}
+      .modal__panel{
+        position:relative;
+        width: min(860px, calc(100% - 24px));
+        border-radius: 22px;
+        background: #ffffff;
+        box-shadow: var(--shadow);
+        overflow:hidden;
+        border:1px solid rgba(15,28,46,.12);
+        display:flex;
+        flex-direction:column;
+        max-height: calc(100vh - 24px);
+      }
+      .modal__head{
+        padding:14px 16px;
+        background:#23455c;
+        color:#ffffff;
+        display:flex; align-items:center; justify-content:space-between; gap:12px;
+      }
+      .modal__title{margin:0; font-weight:1000}
+      .modal__close{
+        border:0;
+        background:rgba(255,255,255,.18);
+        color:#ffffff;
+        cursor:pointer;
+        width:44px; height:44px; border-radius: 14px;
+        display:grid; place-items:center;
+        min-height:44px;
+      }
+      .modal__close:hover{background:rgba(255,255,255,.26)}
+      .modal__body{padding: 16px; color:rgba(15,28,46,.92); line-height:1.75; font-weight:750; flex:1; overflow:auto}
+      .modal__foot{padding: 14px 16px; border-top: 1px solid rgba(15,28,46,.08); display:flex; justify-content:flex-end; gap:10px}
+
+      .poster{
+        width:100%;
+        border-radius: 16px;
+        border:1px solid rgba(15,28,46,.12);
+        overflow:hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+        background:#fff;
+      }
+      .poster img{width:100%; height:auto; display:block}
+
+      /* TDM images inside modal */
+      .tdmimg{
+        width:100%;
+        height:auto;
+        display:block;
+        border-radius: 16px;
+        border:1px solid rgba(15,28,46,.12);
+        box-shadow: 0 10px 26px rgba(0,0,0,.12);
+        background:#fff;
+      }
+      .tdmgrid{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      /* ===== TDM modal responsive reading ===== */
+      .keypoints{
+        margin: 0;
+        padding-left: 18px;
+      }
+      .keypoints li{
+        margin: 8px 0;
+      }
+      .keypoints b{ color: var(--brand2); }
+      .tdmimg{
+        max-height: 72vh;
+        object-fit: contain;
+      }
+      @media (min-width: 900px){
+        .tdmgrid{ grid-template-columns: 1fr 1fr; }
+        .tdmimg{ max-height: 64vh; }
+      }
+
+      /* Reference box */
+      .refbox{
+        margin-top: 12px;
+        border-radius: 16px;
+        border:1px solid rgba(35,69,92,.18);
+        background: rgba(35,69,92,.06);
+        padding: 12px;
+      }
+      .refbox__title{
+        margin:0 0 6px;
+        font-weight:1000;
+        font-size:12px;
+        letter-spacing:.2px;
+        color: #23455c;
+      }
+      .refbox ol{margin:0; padding-left: 18px}
+      .refbox li{
+        margin: 6px 0;
+        font-size:12px;
+        line-height:1.55;
+        color: rgba(15,28,46,.72);
+        font-weight:750;
+      }
+
+      /* Toast */
+      .toast{
+        position: fixed;
+        right: 14px;
+        bottom: 14px;
+        background: rgba(255,198,39,.95);
+        color:#1a2b3d;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border:1px solid rgba(255,179,0,.4);
+        box-shadow: var(--shadow2), var(--glow);
+        opacity:0;
+        transform: translateY(8px);
+        transition: opacity .18s ease, transform .18s ease;
+        z-index: 120;
+        max-width: min(420px, calc(100% - 28px));
+        font-weight:1000;
+      }
+      .toast.is-on{opacity:1; transform: translateY(0)}
+
+      /* ✅ 確保 TDM 卡片底部按鈕一定可見 */
+      .tdm-cards .pill,
+      #tab-tdm .pill{
+        background: rgba(35,69,92,.08);
+        border: 1px solid rgba(35,69,92,.28);
+        color: #23455c;
+      }
+      .tdm-cards .pill:hover,
+      #tab-tdm .pill:hover{
+        background: rgba(35,69,92,.14);
+        border-color: rgba(35,69,92,.40);
+      }
+      .tdm-cards .pill:active,
+      #tab-tdm .pill:active{ transform: translateY(1px); }
+
+      /* ✅ 操作流程區塊（Overview 內新增） */
+      .flowgrid{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+      .flowitem{
+        border-radius: var(--r22);
+        background: rgba(255,255,255,.86);
+        border:1px solid var(--line);
+        box-shadow: var(--shadow2);
+        padding: 16px;
+      }
+      .flowitem h4{
+        margin:0 0 10px;
+        font-weight:1000;
+        color:#23455c;
+        letter-spacing:.2px;
+      }
+      .flowitem p{
+        margin:0 0 12px;
+        color:rgba(15,28,46,.80);
+        font-weight:750;
+        line-height:1.7;
+      }
+      .flowitem .btn{color:#fff}
+      .flowitem .btn--primary{color:#1a2b3d}
+
+
+      /* ===== Hero collapsible (mobile friendly) ===== */
+      .hero__more, .hero__modelsPanel{ margin-top: 14px; }
+      .hero__moreSummary{
+        list-style:none;
+        cursor:pointer;
+        user-select:none;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.18);
+        color:#fff;
+        font-weight:1000;
+        letter-spacing:.2px;
+        min-height:44px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+      .hero__moreSummary::-webkit-details-marker{display:none}
+      .hero__moreSummary::after{
+        content:"▾";
+        margin-left:auto;
+        opacity:.9;
+      }
+      details[open] > .hero__moreSummary::after{content:"▴";}
+      /* Desktop: 保持展開、隱藏 summary（避免多一行） */
+      @media (min-width: 721px){
+        .hero__moreSummary{display:none}
+        .hero__more, .hero__modelsPanel{margin-top:16px}
+      }
+
+      /* Responsive */
+      @media (max-width: 980px){
+        .hero__content{grid-template-columns: 1fr}
+        .hero__badges{grid-template-columns: 1fr}
+        .featuregrid{grid-template-columns: 1fr}
+        .cards{grid-template-columns: 1fr}
+        .models{grid-template-columns: 1fr 1fr}
+        .flowgrid{grid-template-columns: 1fr}
+      }
+
+      @media (max-width: 720px){
+        .nav__toggle{display:inline-flex}
+        .nav__menu{
+          display:none;
+          position:absolute;
+          right: 20px;
+          top: 56px;
+          background: rgba(18,35,49,.96);
+          border:1px solid rgba(255,255,255,.18);
+          border-radius: 16px;
+          padding: 10px;
+          flex-direction:column;
+          gap:10px;
+          box-shadow: var(--shadow);
+        }
+        .nav__menu.is-open{display:flex}
+        .field__input{width: 100%}
+        .models{grid-template-columns: 1fr}
+        .container{ width: min(var(--max), calc(100% - 28px)); }
+        .hero__content{ padding: 22px 0 18px; }
+        .hero__desc{ font-size: 15px; }
+        .hero__cta{ gap: 10px; }
+        .btn{ width: 100%; justify-content:center; }
+        .modelcard{ padding: 12px; }
+        .contactcard{ flex-direction:column; align-items:stretch; }
+        .contactcard__right{ display:flex; flex-wrap:wrap; }
+        .modal__panel{ width: calc(100% - 16px); }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="partner" aria-label="原廠與代理商">
+          <span class="logo-pill" title="MedRich（代理商）">
+            <img src="logo_mr_transparent.png" alt="MedRich logo" loading="lazy" />
+          </span>
+        </div>
+
+        <div class="brand">
+<div class="brand__text">
+            <div class="brand__title">AFIAS</div>
+            <div class="brand__tag">Simple , Fast , Accurate</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主選單">
+          <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+            選單
+          </button>
+          <div class="nav__menu" id="navMenu">
+            <button class="nav__item is-active" data-tab="overview">產品總覽</button>
+            <button class="nav__item" data-tab="menu">Test Menu</button>
+            <button class="nav__item" data-tab="tdm">TDM 臨床應用</button>
+          </div>
+        </nav>
+</div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero" aria-label="AFIAS 產品主視覺">
+        <div class="hero__bg" aria-hidden="true"></div>
+
+        <div class="container hero__content">
+          <div class="hero__left">
+            <div class="hero__eyebrow" aria-label="Boditech logo">
+              <img class="brandlogo" src="logo_boditech_transparent.png" alt="Boditech BIO TECHNOLOGY" loading="lazy" />
+            </div>
+
+            <h1 class="hero__title">複雜檢測<br />輕鬆搞定</h1>
+            <p class="hero__desc">
+              一機多檢，5~15分鐘快速完成報告；支援全血、指尖血與靜脈血檢測，滿足不同臨床場景。
+            </p>
+
+            <div class="hero__cta">
+              <button class="btn btn--primary" id="btnQuickMenu">快速查 Test Menu</button>
+              <button class="btn btn--ghost" id="btnOpenPoster">看 A4 主視覺</button>
+            </div>
+</div>
+
+          <details class="hero__modelsPanel" open aria-label="機型展示（可展開）">
+            <summary class="hero__moreSummary">查看機型與基本規格</summary>
+            <div class="hero__right" aria-label="機型展示">
+ aria-label="機型展示">
+            <div class="hexgrid" aria-hidden="true">
+              <div class="hex hex--a"></div>
+              <div class="hex hex--b"></div>
+              <div class="hex hex--c"></div>
+              <div class="hex hex--d"></div>
+              <div class="hex hex--e"></div>
+            </div>
+
+            <div class="models" role="list">
+              <button class="modelcard" role="listitem" data-model="AFIAS 1" data-dim="180.6 × 320.6 × 206.4 (mm)">
+                <img class="modelcard__img" src="afias1.png" alt="AFIAS 1 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 1</div>
+                <div class="modelcard__dim">180.6 × 320.6 × 206.4 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 3" data-dim="276 × 365 × 313 (mm)">
+                <img class="modelcard__img" src="afias3.png" alt="AFIAS 3 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 3</div>
+                <div class="modelcard__dim">276 × 365 × 313 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 6" data-dim="420 × 336 × 293 (mm)">
+                <img class="modelcard__img" src="afias6.png" alt="AFIAS 6 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 6</div>
+                <div class="modelcard__dim">420 × 336 × 293 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+
+              <button class="modelcard" role="listitem" data-model="AFIAS 10" data-dim="426 × 443 × 395 (mm)">
+                <img class="modelcard__img" src="afias10.png" alt="AFIAS 10 儀器外觀" loading="lazy" />
+                <div class="modelcard__name">AFIAS 10</div>
+                <div class="modelcard__dim">426 × 443 × 395 (mm)</div>
+                <div class="modelcard__hint">點擊看重點</div>
+              </button>
+            </div>
+          </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ERROR BAR -->
+      <section class="container">
+        <div class="alert is-hidden" id="alertBar" role="status" aria-live="polite">
+          <div class="alert__icon" aria-hidden="true">!</div>
+          <div class="alert__text" id="alertText">提示訊息</div>
+          <button class="alert__close" id="alertClose" aria-label="關閉提示">✕</button>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <section class="container tabs">
+        <!-- OVERVIEW -->
+        <section class="tab is-active" id="tab-overview" data-tabpanel="overview">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">產品特色</h2>
+          </div>
+
+          <div class="featuregrid">
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">📋</div>
+              <h3 class="feature__title">完整的檢驗項目</h3>
+              <ul class="feature__list">
+                <li>一機多檢，5~15分鐘快速完成報告</li>
+                <li>支援全血、指尖血與靜脈血檢測，滿足不同臨床場景</li>
+              </ul>
+              <!-- ✅ 看檢驗項目：改成捲到「操作流程」區塊 -->
+              <button class="btn btn--small btn--link feature__btn" id="btnToFlow">看檢驗項目</button>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">🏅</div>
+              <h3 class="feature__title">高品質檢驗報告</h3>
+              <ul class="feature__list">
+                <li>高靈敏螢光分析技術，提升報告品質</li>
+                <li>內建品管系統</li>
+                <li>5~15分鐘完成報告分析</li>
+              </ul>
+              <!-- ✅ 看操作流程：直接跳出 YouTube -->
+              <button class="btn btn--small btn--link feature__btn" id="btnOpenWorkflowVideo">看操作流程</button>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">⚙️</div>
+              <h3 class="feature__title">簡易且便利的操作</h3>
+              <ul class="feature__list">
+                <li>All-in-One Cartridge，隨開即用試劑，穩定易保存</li>
+                <li>獨家 C-tip™ 技術，輕鬆採集指尖血</li>
+              </ul>
+              <!-- ✅ C-Tip操作流程：直接跳出 YouTube -->
+              <button class="btn btn--small btn--link feature__btn" id="btnOpenCTipVideo">C-Tip操作流程</button>
+            </article>
+          </div>
+          <div class="contactcard">
+            <div class="contactcard__left">
+              <h3 class="contactcard__title">展場快速聯繫</h3>
+              <div class="contactcard__logo" aria-label="代理商">
+                <img src="logo_mr_transparent.png" alt="MedRich logo" loading="lazy" />
+              </div>
+              <p class="contactcard__desc">點一下即可複製電話，方便現場留下聯絡方式。</p>
+            </div>
+            <div class="contactcard__right">
+              <button class="pill" data-copy="02-2357-0091">台北｜02-2357-0091</button>
+              <button class="pill" data-copy="04-2275-7119">台中｜04-2275-7119</button>
+              <button class="pill" data-copy="07-581-0536">高雄｜07-581-0536</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEST MENU -->
+        <section class="tab" id="tab-menu" data-tabpanel="menu">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">AFIAS Test Menu</h2>
+            <p class="sectionhead__desc">W: whole blood, S: serum, P: plasma, C: C-tip</p>
+            <p class="sectionhead__desc">** 僅適用 AFIAS 1/6　　*** 僅適用 AFIAS 3/6/10</p>
+          </div>
+
+          <div class="toolbar" role="region" aria-label="Test Menu 工具列">
+            <div class="toolbar__row">
+              <label class="field">
+                <span class="field__label">搜尋</span>
+                <input id="q" class="field__input" placeholder="例如：PCT、NT-proBNP、Carba 5…" autocomplete="off" />
+              </label>
+
+              <label class="field">
+                <span class="field__label">分類</span>
+                <select id="cat" class="field__input">
+                  <option value="all">全部</option>
+                </select>
+              </label>
+
+              <label class="check">
+                <input type="checkbox" id="onlyCtip" />
+                <span>篩選 C-tip</span>
+              </label>
+
+              <button class="btn btn--primary" id="btnReset">重設</button>
+            </div>
+
+            <div class="toolbar__meta" id="resultMeta">載入中…</div>
+          </div>
+
+          <div class="tablewrap">
+            <table class="table" aria-label="AFIAS Test Menu 清單">
+              <thead>
+                <tr>
+                  <th>分類</th>
+                  <th>檢驗項目</th>
+                  <th>產品編號</th>
+                  <th>檢體別</th>
+                  <th>分析時間</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="footnotes">
+            <div class="footnotes__item">* W: Whole Blood, S: Serum, P: Plasma, C: C-tip</div>
+            <div class="footnotes__item">** 僅適用 AFIAS 1/6　　*** 僅適用 AFIAS 3/6/10</div>
+          </div>
+        </section>
+
+        <!-- TDM -->
+        <section class="tab" id="tab-tdm" data-tabpanel="tdm">
+          <div class="sectionhead">
+            <h2 class="sectionhead__title">TDM｜生物製劑治療監控（Therapeutic Drug Monitoring）</h2>
+            <p class="sectionhead__desc">
+              22分鐘內取得「藥物濃度（Trough levels）」與「抗藥抗體（ADA）」的客觀數據，協助臨床評估療效，確保用藥有效性與安全性，並支持個人化治療策略。
+            </p>
+          </div>
+
+          <div class="cards tdm-cards">
+            <article class="card">
+              <h3 class="card__title">為什麼要做 TDM？</h3>
+              <p class="card__desc">
+                當療效不如預期，或需要維持穩定治療反應時，TDM可提供藥物濃度與抗藥抗體資訊，預測臨床反應，並以此評估合適的個人化治療方案。
+              </p>
+              <button class="pill" data-modal="tdm-why">查看重點</button>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">何時執行 TDM</h3>
+              <p class="card__desc">
+                誘導期與維持期主動監測藥物濃度，以預測與維持療效。遇到治療失敗或失去反應時，參考TDM進行策略調整。
+              </p>
+              <button class="pill" data-modal="tdm-when">查看建議時機</button>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">參考 TDM 調整治療策略</h3>
+              <p class="card__desc">
+                依「症狀是否改善 × 體內藥物濃度 × 抗藥抗體狀態」協助臨床決策。
+              </p>
+              <button class="pill" data-modal="tdm-strategy">查看TDM決策圖</button>
+            </article>
+          </div>
+
+          <div class="callout" role="region" aria-label="AFIAS TDM 解決方案">
+            <div class="callout__badge">AFIAS</div>
+            <div class="callout__text">
+              <div style="font-weight:1000; margin-bottom:8px;">AFIAS TDM 解決方案</div>
+              <div style="font-weight:900;">Comprehensive TDM tests in 22 minutes</div>
+              <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn--primary" id="btnJumpTdmItems2">查看 TDM 項目</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal is-hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="document">
+        <div class="modal__head">
+          <h3 class="modal__title" id="modalTitle">標題</h3>
+          <button class="modal__close" aria-label="關閉" data-close="1">✕</button>
+        </div>
+        <div class="modal__body" id="modalBody"></div>
+        <div class="modal__foot">
+                    <button class="btn btn--primary" data-close="1">查看TDM項目</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
+
+    <script>
+      // ========= Utilities =========
+      const $ = (sel, root=document) => root.querySelector(sel);
+      const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+      function showToast(msg){
+        const t = $("#toast");
+        t.textContent = msg;
+        t.classList.add("is-on");
+        window.clearTimeout(showToast._tm);
+        showToast._tm = window.setTimeout(() => t.classList.remove("is-on"), 2200);
+      }
+
+      function showAlert(msg){
+        $("#alertText").textContent = msg;
+        $("#alertBar").classList.remove("is-hidden");
+      }
+      function hideAlert(){
+        $("#alertBar").classList.add("is-hidden");
+      }
+
+      function openModal(title, html){
+        $("#modalTitle").textContent = title;
+        $("#modalBody").innerHTML = html;
+        $("#modal").classList.remove("is-hidden");
+
+        // ✅ 鎖住背景捲動（手機更好操作）
+        document.body.style.overflow = "hidden";
+
+        // ✅ 自動聚焦關閉鍵，讓使用者更容易關閉（含鍵盤/讀屏）
+        const closeBtn = $("#modal").querySelector("[data-close='1']");
+        if(closeBtn) closeBtn.focus({preventScroll:true});
+      }
+
+      function closeModal(){
+        $("#modal").classList.add("is-hidden");
+        $("#modalBody").innerHTML = "";
+        document.body.style.overflow = "";
+      }
+
+      function openInNewTab(url){
+        try{
+          window.open(url, "_blank", "noopener,noreferrer");
+        }catch(e){
+          showAlert("瀏覽器阻擋了新視窗。請允許彈出視窗或改用手動開啟連結。");
+        }
+      }
+
+      const AFIAS_MODELS = {
+        "AFIAS 1": {
+          title: "AFIAS-1｜Compact All-in-One Analyzer",
+          body: `
+            <ul>
+            <li><b>單通道</b></li>
+            <li><b>分析模式：</b>常規模式 / C-Tip模式</li>
+            <li><b>資料儲存：</b>5,000筆</li>
+            <li><b>介面：</b>5 吋觸控螢幕、內建熱感印表機</li>
+            <li><b>尺寸：</b>180.6 × 320.6 × 206.4 mm</li>
+            <li><b>重量：</b>4.0 kg</li>
+            </ul>
+          `
+        },
+        "AFIAS 3": {
+          title: "AFIAS-3｜Multi-Testing Analyzer",
+          body: `
+            <ul>
+            <li><b>三通道</b></li>
+            <li><b>分析模式：</b>常規模式 / C-Tip模式</li>
+            <li><b>資料儲存：</b>5,000筆</li>
+            <li><b>介面：</b>7 吋觸控螢幕、內建熱感印表機</li>
+            <li><b>尺寸：</b>276 × 365 × 313 mm</li>
+            <li><b>重量：</b>9.3 kg</li>
+            </ul>
+          `
+        },
+        "AFIAS 6": {
+          title: "AFIAS-6｜Versatile Desktop Analyzer",
+          body: `
+            <ul>
+            <li><b>六通道</b></li>
+            <li><b>分析模式：</b>常規模式 / C-Tip模式</li>
+            <li><b>資料儲存：</b>5,000筆</li>
+            <li><b>介面：</b>7 吋觸控螢幕、內建熱感印表機</li>
+            <li><b>尺寸：</b>420 × 336 × 293 mm</li>
+            <li><b>重量：</b>15.1 kg</li>
+            </ul>
+          `
+        },
+        "AFIAS 10": {
+          title: "AFIAS-10｜High-Throughput Analyzer",
+          body: `
+            <ul>
+            <li><b>十通道</b></li>
+            <li><b>分析模式：</b>原管上機 / 常規模式 / C-Tip模式</li>
+            <li><b>資料儲存：</b>5,000筆</li>
+            <li><b>介面：</b>10.1 吋觸控螢幕、內建熱感印表機</li>
+            <li><b>尺寸：</b>426 × 443 × 395 mm</li>
+            <li><b>重量：</b>20 kg</li>
+            </ul>
+          `
+        }
+      };
+
+      // ========= Data (Test Menu) =========
+      const TEST_MENU = [
+        {cat:"Cardiac", item:"hsCRP", code:"SMFP-78", sample:"W/S/P/C", time:"3 min"},
+        {cat:"Cardiac", item:"D-Dimer Neo", code:"SMFP-129", sample:"W/P", time:"12 min"},
+        {cat:"Cardiac", item:"Tn-I Plus", code:"SMFP-35", sample:"W/S/P", time:"12 min"},
+        {cat:"Cardiac", item:"CK-MB Neo", code:"SMFP-128", sample:"W/S/P", time:"12 min"},
+        {cat:"Cardiac", item:"Myoglobin Neo", code:"SMFP-127", sample:"W/S/P", time:"12 min"},
+        {cat:"Cardiac", item:"Cardiac Triple", code:"SMFP-59", sample:"W/S/P", time:"12 min"},
+        {cat:"Cardiac", item:"Troponin T", code:"SMFP-95", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Cardiac", item:"BNP", code:"SMFP-83", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Cardiac", item:"NT-proBNP", code:"SMFP-36", sample:"W/S/P", time:"12 min"},
+        {cat:"Cardiac", item:"ST2", code:"SMFP-70", sample:"W/S/P", time:"12 min"},
+
+        {cat:"Hormone", item:"TSH Plus", code:"SMFP-38", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Hormone", item:"T3", code:"SMFP-18", sample:"S/P", time:"10 min"},
+        {cat:"Hormone", item:"T4", code:"SMFP-19", sample:"S/P", time:"10 min"},
+        {cat:"Hormone", item:"Free T4", code:"SMFP-145", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Hormone", item:"FSH", code:"SMFP-5", sample:"W/S/P", time:"12 min"},
+        {cat:"Hormone", item:"β-HCG Plus", code:"SMFP-52", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Hormone", item:"LH", code:"SMFP-6", sample:"W/S/P", time:"12 min"},
+        {cat:"Hormone", item:"Prolactin", code:"SMFP-8", sample:"W/S/P", time:"10 min"},
+        {cat:"Hormone", item:"Progesterone", code:"SMFP-94", sample:"S/P", time:"15 min"},
+        {cat:"Hormone", item:"Testosterone", code:"SMFP-29", sample:"S/P", time:"15 min"},
+        {cat:"Hormone", item:"Cortisol", code:"SMFP-22", sample:"W/S/P", time:"10 min"},
+        {cat:"Hormone", item:"AMH", code:"SMFP-62", sample:"S/P", time:"12 min"},
+        {cat:"Hormone", item:"Estradiol", code:"SMFP-184", sample:"W/S/P", time:"20 min"},
+        {cat:"Hormone", item:"PTH", code:"SMFP-161", sample:"W/S/P", time:"17 min"},
+
+        {cat:"Diabetes", item:"HbA1c Neo", code:"SMFP-109", sample:"W/C", time:"10 min"},
+        {cat:"Diabetes", item:"Microalbumin", code:"SMFP-30", sample:"Urine", time:"12 min"},
+        {cat:"Diabetes", item:"Insulin", code:"SMFP-174", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Diabetes", item:"HbA1c", code:"SMFP-28", sample:"W/C", time:"10 min"},
+
+        {cat:"Infection", item:"CRP**", code:"SMFP-2", sample:"W/S/P/C", time:"3 min"},
+        {cat:"Infection", item:"MxA/CRP", code:"SMFP-102", sample:"W/C", time:"12 min"},
+        {cat:"Infection", item:"PCT**", code:"SMFP-7", sample:"W/S/P", time:"12 min"},
+        {cat:"Infection", item:"PCT Plus**", code:"SMFP-32", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Infection", item:"IL-6", code:"SMFP-74", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Infection", item:"Carba 5***", code:"SMFP-182", sample:"Colony test", time:"15 min"},
+        {cat:"Infection", item:"Flu A+B", code:"SMFP-68", sample:"Swab", time:"10 min"},
+        {cat:"Infection", item:"RSV", code:"SMFP-126", sample:"Swab", time:"10 min"},
+        {cat:"Infection", item:"COVID-19 Ab", code:"SMFP-72", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Infection", item:"COVID-19 Ag", code:"SMFP-71", sample:"Swab", time:"12 min"},
+        {cat:"Infection", item:"COVID-19/Flu Ag Combo", code:"SMFP-77", sample:"Swab", time:"20 min"},
+        {cat:"Infection", item:"COVID-19/Flu A+B/RSV Ag Combo", code:"SMFP-113", sample:"Swab", time:"20 min"},
+        {cat:"Infection", item:"Strep A", code:"SMFP-177", sample:"Throat swab", time:"10 min"},
+        {cat:"Infection", item:"HBsAg", code:"SMFP-15", sample:"W/S/P", time:"12 min"},
+        {cat:"Infection", item:"Anti-HBs", code:"SMFP-16", sample:"W/S/P", time:"15 min"},
+        {cat:"Infection", item:"Anti-HCV**", code:"SMFP-17", sample:"W/S/P", time:"12 min"},
+        {cat:"Infection", item:"Dengue NS1 Ag", code:"SMFP-44", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Infection", item:"Dengue IgG/IgM", code:"SMFP-41", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Infection", item:"NORO", code:"SMFP-26", sample:"Feces", time:"12 min"},
+        {cat:"Infection", item:"ROTA", code:"SMFP-25", sample:"Feces", time:"12 min"},
+        {cat:"Infection", item:"Rota/Adeno", code:"SMFP-43", sample:"Feces", time:"12 min"},
+        {cat:"Infection", item:"IGRA-TB", code:"SMFP-99", sample:"P", time:"15 min"},
+        {cat:"Infection", item:"HIV 1/2 Ab", code:"SMFP-172", sample:"W/S/P/C", time:"10 min"},
+
+        {cat:"Autoimmune", item:"Anti-CCP Plus", code:"SMFP-67", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Autoimmune", item:"Total IgE", code:"SMFP-84", sample:"W/S/P", time:"12 min"},
+
+        {cat:"Organ Function", item:"Sphingotest penKid***", code:"SMFP-156", sample:"W/P", time:"15 min"},
+        {cat:"Organ Function", item:"KL-6", code:"SMFP-155", sample:"S/P", time:"10 min"},
+
+        {cat:"Cancer", item:"PSA Neo", code:"SMFP-130", sample:"W/S/P/C", time:"15 min"},
+        {cat:"Cancer", item:"Free PSA", code:"SMFP-170", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Cancer", item:"AFP", code:"SMFP-27", sample:"W/S/P", time:"15 min"},
+        {cat:"Cancer", item:"CEA", code:"SMFP-21", sample:"W/S/P", time:"15 min"},
+        {cat:"Cancer", item:"Cyfra21-1", code:"SMFP-135", sample:"S/P", time:"12 min"},
+        {cat:"Cancer", item:"CA19-9", code:"SMFP-134", sample:"S/P", time:"12 min"},
+        {cat:"Cancer", item:"CA125", code:"SMFP-132", sample:"S/P", time:"12 min"},
+
+        {cat:"Therapeutic Drug Monitoring", item:"Infliximab", code:"SMFP-75", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Adalimumab", code:"SMFP-89", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Golimumab", code:"SMFP-91", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Vedolizumab", code:"SMFP-115", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Ustekinumab", code:"SMFP-114", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Etanercept", code:"SMFP-93", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Trastuzumab", code:"SMFP-105", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Total Anti-Infliximab", code:"SMFP-76", sample:"S/P", time:"22 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Infliximab", code:"SMFP-86", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Adalimumab", code:"SMFP-87", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Golimumab", code:"SMFP-90", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Vedolizumab", code:"SMFP-100", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Ustekinumab", code:"SMFP-101", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Etanercept", code:"SMFP-92", sample:"W/S/P/C", time:"10 min"},
+        {cat:"Therapeutic Drug Monitoring", item:"Free Anti-Trastuzumab", code:"SMFP-96", sample:"W/S/P/C", time:"10 min"},
+
+        {cat:"Others", item:"Ferritin", code:"SMFP-23", sample:"S/P", time:"10 min"},
+        {cat:"Others", item:"Vitamin D Neo", code:"SMFP-108", sample:"W/S/P/C", time:"12 min"},
+        {cat:"Others", item:"H. pylori SA", code:"SMFP-178", sample:"Feces", time:"12 min"},
+        {cat:"Others", item:"Calprotectin", code:"SMFP-149", sample:"Feces", time:"10 min"},
+      ];
+
+      // ========= Tabs =========
+      function setTab(name){
+        $$(".nav__item").forEach(b => b.classList.toggle("is-active", b.dataset.tab === name));
+        $$(".tab").forEach(p => p.classList.toggle("is-active", p.dataset.tabpanel === name));
+        $("#navMenu").classList.remove("is-open");
+        $("#navToggle").setAttribute("aria-expanded", "false");
+        if(name === "menu") showToast("可搜尋/篩選 Test Menu");
+      }
+
+      // ========= Render Test Menu =========
+      function initCategories(){
+        const cats = Array.from(new Set(TEST_MENU.map(x => x.cat)));
+        const sel = $("#cat");
+        cats.forEach(c => {
+          const o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          sel.appendChild(o);
+        });
+      }
+      function includesCtip(sample){ return String(sample || "").includes("C"); }
+
+      function filterData(){
+        const q = ($("#q").value || "").trim().toLowerCase();
+        const cat = $("#cat").value;
+        const onlyC = $("#onlyCtip").checked;
+        let data = TEST_MENU.slice();
+        if(cat !== "all") data = data.filter(x => x.cat === cat);
+        if(onlyC) data = data.filter(x => includesCtip(x.sample));
+        if(q){
+          data = data.filter(x => {
+            const hay = `${x.cat} ${x.item} ${x.code} ${x.sample} ${x.time}`.toLowerCase();
+            return hay.includes(q);
+          });
+        }
+        return data;
+      }
+
+      function renderTable(rows){
+        const tbody = $("#tbody");
+        tbody.innerHTML = "";
+        if(!Array.isArray(rows)){
+          showAlert("資料格式不正確：Test Menu 不是陣列，請檢查 TEST_MENU。");
+          return;
+        }
+        if(rows.length === 0){
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td colspan="5">
+              <div style="padding:10px 0; font-weight:1000;">
+                查無符合條件的項目。建議清除篩選或改用其他關鍵字。
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+          $("#resultMeta").textContent = "0 筆結果";
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        rows.forEach(x => {
+          const tr = document.createElement("tr");
+          const ctip = includesCtip(x.sample) ? `<span class="chip">C-tip</span>` : ``;
+          tr.innerHTML = `
+            <td>${x.cat}</td>
+            <td>${x.item}${ctip}</td>
+            <td>${x.code}</td>
+            <td>${x.sample}</td>
+            <td>${x.time}</td>
+          `;
+          frag.appendChild(tr);
+        });
+        tbody.appendChild(frag);
+        $("#resultMeta").textContent = `共 ${rows.length} 筆結果`;
+      }
+
+      function refreshMenu(){
+        if(!Array.isArray(TEST_MENU) || TEST_MENU.length === 0){
+          showAlert("缺少 Test Menu 資料（TEST_MENU）。請確認已貼上附件表單內容。");
+          renderTable([]);
+          return;
+        }
+        hideAlert();
+        renderTable(filterData());
+      }
+
+      // ========= Modals =========
+      function openTdmWhenModal(){
+        openModal("何時執行 TDM", `
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:1000; margin-bottom:6px;">Proactive TDM</div>
+            <ul class="keypoints">
+              <li>誘導緩解（<b>Induction Therapy</b>）期間，或在 Induction 療程結束前，監控所有病患的藥物濃度和抗藥抗體。</li>
+              <li>達到維持治療（<b>Maintenance Therapy</b>）時，至少監控一次藥物濃度和抗藥抗體，確保用藥有效性，有助於降低 <b>28 ~ 34%</b> 之醫療照護成本。</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:1000; margin-bottom:6px;">Reactive TDM</div>
+            <div style="opacity:.95;">
+              完成誘導緩解治療後，或達到續用評估時機時，發現病患未達到預期療效（無反應 / <b>nonresponse</b>、治療後失去反應 / <b>loss of response</b> 或 藥物不耐受 / <b>drug intolerant</b>）時，建議藉 TDM 調整治療策略。
+            </div>
+          </div>
+
+          <div class="refbox" aria-label="Reference">
+            <p class="refbox__title">Reference</p>
+            <ol>
+              <li>J Crohns Colitis. 2019 Aug 14;13(8):976-981. doi: 10.1093/ecco-jcc/jjz018.</li>
+              <li>Khan A et al. New Zealand Society of Gastroenterology Guidelines on Therapeutic Drug Monitoring in Inflammatory Bowel Disease. N Z Med J. 2019 Mar 8;132(1491):46-62.</li>
+              <li>Maaser C. et al. ECCO-ESGAR Guideline for Diagnostic Assessment in IBD Part 1: Initial diagnosis, monitoring of known IBD, detection of complications. Journal of Crohn’s and Colitis, 2018, 1–32.</li>
+              <li>Martelli L, Olivera P, Roblin X, Attar A, Peyrin-Biroulet L. Cost-effectiveness of drug monitoring of anti-TNF therapy in inflammatory bowel disease and rheumatoid arthritis: a systematic review. J Gastroenterol. 2017 Jan;52(1):19-25.</li>
+            </ol>
+          </div>
+
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn--primary" id="btnGoTdmMenuFromWhen">查看 TDM 項目</button>
+            <button class="btn btn--ghost" data-close="1" style="color:#23455c;border-color:rgba(35,69,92,.22);background:rgba(35,69,92,.06)">關閉</button>
+          </div>
+        `);
+
+        window.setTimeout(() => {
+          const btn = $("#btnGoTdmMenuFromWhen");
+          if(btn){
+            btn.addEventListener("click", () => {
+              closeModal();
+              setTab("menu");
+              $("#cat").value = "Therapeutic Drug Monitoring";
+              $("#q").value = "";
+              $("#onlyCtip").checked = false;
+              refreshMenu();
+              showToast("已切到 TDM 分類");
+            });
+          }
+        }, 0);
+      }
+
+      function openTdmStrategyModal(){
+        const isMobile = window.matchMedia("(max-width: 720px)").matches;
+
+        const imgOnly = isMobile
+          ? `
+            <div class="tdmgrid" aria-label="TDM 決策圖（手機分段）">
+              <img class="tdmimg" src="TDM_p6_mobile_top.png" alt="TDM 決策圖（上半部）" loading="lazy" />
+              <img class="tdmimg" src="TDM_p6_mobile_bottom.png" alt="TDM 決策圖（下半部）" loading="lazy" />
+            </div>
+          `
+          : `
+            <div class="tdmgrid" aria-label="TDM 決策圖（整頁）">
+              <img class="tdmimg" src="TDM_p6_web.png" alt="TDM 決策圖（整頁）" loading="lazy" />
+            </div>
+          `;
+
+        openModal("查看TDM決策圖", imgOnly);
+      }
+
+      // ========= Interactions =========
+      function bind(){
+        // Tabs
+        $$(".nav__item").forEach(btn => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
+
+        // Mobile nav
+        $("#navToggle").addEventListener("click", () => {
+          const menu = $("#navMenu");
+          const isOpen = menu.classList.toggle("is-open");
+          $("#navToggle").setAttribute("aria-expanded", String(isOpen));
+        });
+
+        // Quick menu
+        $("#btnQuickMenu").addEventListener("click", () => setTab("menu"));
+
+        // Open poster (A4)
+        $("#btnOpenPoster").addEventListener("click", () => {
+          openModal("AFIAS A4 主視覺", `
+            <div class="poster">
+              <img src="afias_a4_cn.png" alt="AFIAS A4 中文單面主視覺（請放在同資料夾）" />
+            </div>
+             `);
+        });
+
+        // Model cards
+        $$(".modelcard").forEach(c => {
+          c.addEventListener("click", () => {
+            const model = c.dataset.model;
+            if (!AFIAS_MODELS[model]) return openModal(model, "<p>尚未定義此機型的詳細規格。</p>");
+            openModal(AFIAS_MODELS[model].title, AFIAS_MODELS[model].body);
+          });
+        });
+
+        // Copy phone
+        $$(".pill[data-copy]").forEach(p => {
+          p.addEventListener("click", async () => {
+            const v = p.dataset.copy || "";
+            try{
+              await navigator.clipboard.writeText(v);
+              showToast(`已複製：${v}`);
+            }catch(e){
+              showAlert("無法使用剪貼簿（可能被瀏覽器阻擋）。你仍可手動選取電話。");
+            }
+          });
+        });
+
+        // Menu controls
+        ["q","cat","onlyCtip"].forEach(id => {
+          $("#"+id).addEventListener("input", refreshMenu);
+          $("#"+id).addEventListener("change", refreshMenu);
+        });
+        $("#btnReset").addEventListener("click", () => {
+          $("#q").value = "";
+          $("#cat").value = "all";
+          $("#onlyCtip").checked = false;
+          refreshMenu();
+          showToast("已重設篩選條件");
+        });
+
+        // TDM jump button in callout
+        $("#btnJumpTdmItems2").addEventListener("click", () => {
+          setTab("menu");
+          $("#cat").value = "Therapeutic Drug Monitoring";
+          $("#q").value = "";
+          $("#onlyCtip").checked = false;
+          refreshMenu();
+          showToast("已切到 TDM 分類");
+        });
+
+        // Modal close
+        $("#modal").addEventListener("click", (e) => {
+          if(e.target && e.target.dataset && e.target.dataset.close) closeModal();
+        });
+        window.addEventListener("keydown", (e) => {
+          if(e.key === "Escape") closeModal();
+        });
+
+        // ✅ 手機：在 Modal 內容區下滑即可關閉（避免找不到 X）
+        (function enableSwipeToClose(){
+          const panel = $("#modal").querySelector(".modal__panel");
+          if(!panel) return;
+          let y0 = null, t0 = 0;
+
+          panel.addEventListener("touchstart", (ev) => {
+            if($("#modal").classList.contains("is-hidden")) return;
+            y0 = ev.touches && ev.touches[0] ? ev.touches[0].clientY : null;
+            t0 = Date.now();
+          }, {passive:true});
+
+          panel.addEventListener("touchmove", (ev) => {
+            if(y0 == null) return;
+            const y = ev.touches && ev.touches[0] ? ev.touches[0].clientY : null;
+            if(y == null) return;
+            const dy = y - y0;
+            // 往下滑超過 90px 且速度夠快 → 關閉
+            if(dy > 90 && (Date.now() - t0) < 600){
+              y0 = null;
+              closeModal();
+            }
+          }, {passive:true});
+
+          panel.addEventListener("touchend", () => { y0 = null; }, {passive:true});
+        })();
+
+
+        // Alert close
+        $("#alertClose").addEventListener("click", hideAlert);
+
+        // ===== TDM modals =====
+        $$("[data-modal='tdm-why']").forEach(b => {
+          b.addEventListener("click", () => {
+            openModal("為什麼要做 TDM？", `
+              <div style="margin-bottom:10px;">
+                <div style="font-weight:1000; margin-bottom:6px;">除了換藥，有更好的選擇！</div>
+                <ul style="margin:0; padding-left:18px;">
+                  <li><b>透過藥物治療監控（therapeutic drug monitoring，TDM），測定患者體內的<b>藥物濃度</b>與<b>抗藥物抗體</b>，可評估患者之藥物暴露，預測臨床反應，並以此制定合適的個人化治療方案</li>
+                </ul>
+              </div>
+              <div class="tdmgrid">
+                <img class="tdmimg" src="tdm_page_4.png" alt="TDM 醫師介紹 p.4" loading="lazy" />
+                <img class="tdmimg" src="tdm_page_5.png" alt="TDM 醫師介紹 p.5" loading="lazy" />
+              </div>
+            `);
+          });
+        });
+
+        $$("[data-modal='tdm-when']").forEach(b => b.addEventListener("click", openTdmWhenModal));
+        $$("[data-modal='tdm-strategy']").forEach(b => b.addEventListener("click", openTdmStrategyModal));
+
+        // ✅ 產品特色三方塊：依需求改連結行為
+        const YT_WORKFLOW = "https://youtube.com/clip/Ugkx7CBjjboOx_l4xwYQWKDT7tkfBqJ13ACe?si=MklRvtdnlnttxC9K";
+        const YT_CTIP     = "https://youtube.com/clip/UgkxvGMe1X9K-FSpWhMd0_1lkQaeFqCE7Pfx?si=BEMMbYEcW3FCzydu";
+
+        // 「看檢驗項目」：切到 Test Menu
+        $("#btnToFlow").addEventListener("click", () => {
+          setTab("menu");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // 「看操作流程」→ YouTube clip
+        $("#btnOpenWorkflowVideo").addEventListener("click", () => openInNewTab(YT_WORKFLOW));
+
+        // 「C-tip操作流程」→ YouTube clip
+        $("#btnOpenCTipVideo").addEventListener("click", () => openInNewTab(YT_CTIP));
+
+        // （避免手機上誤觸後選單蓋住畫面）點擊空白處自動收起選單
+        document.addEventListener("click", (e) => {
+          const menu = $("#navMenu");
+          const toggle = $("#navToggle");
+          if(!menu.classList.contains("is-open")) return;
+          if(menu.contains(e.target) || toggle.contains(e.target)) return;
+          menu.classList.remove("is-open");
+          toggle.setAttribute("aria-expanded", "false");
+        });
+
+      }
+
+      // ========= Boot =========
+      function boot(){
+        try{
+          initCategories();
+          refreshMenu();
+          bind();
+
+          // ✅ 手機：預設收合 Hero 的「亮點/機型」，減少首屏高度
+          if(window.matchMedia("(max-width: 720px)").matches){
+            $$("details.hero__more, details.hero__modelsPanel").forEach(d => d.open = false);
+          }
+        }catch(err){
+          console.error(err);
+          showAlert("初始化失敗：請檢查是否有漏貼 HTML/CSS/JS 任一段。");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", boot);
+    </script>
+  </body>
+</html>
